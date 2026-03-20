@@ -1,0 +1,174 @@
+export interface PortfolioProject {
+  slug: string
+  code: string
+  title: string
+  eyebrow: string
+  category: string
+  description: string
+  longDescription: string
+  image: string
+  alt: string
+  tags: string[]
+  challenge: string
+  solution: string
+  outcomes: string[]
+  metrics: Array<{
+    label: string
+    value: string
+  }>
+  deliverables: string[]
+}
+
+export const portfolioProjects: PortfolioProject[] = [
+  {
+    slug: 'build-001',
+    code: 'BUILD_001',
+    title: 'AETHER CORE ENGINE',
+    eyebrow: 'Distributed Settlement Infrastructure',
+    category: 'Platform Engineering',
+    description:
+      'Distributed ledger infrastructure for high-frequency algorithmic trade settlements. Built for 99.999% uptime.',
+    longDescription:
+      'Aether Core Engine was designed for a capital markets team that needed trade settlement logic to run with deterministic reliability across multiple regions. The system had to process intense peak traffic, keep auditability intact, and remain debuggable under strict compliance requirements.',
+    image:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuBkEiaNuUf-EPuzrEMIk72HCOO5dbsvfYvX7qCBhFJjMnT3rW5oKI84qDp568z2wVN711RPMGHW8gtx4kl8aNFV-KHhuFY4EkbXBNWW0tucg_sTjuIQ3EYImBS2xqF0VK0zjkW6NGmbPo9Z6ko4iMYH9jQChdaB2dXBZYPkKBNsbz5XZ1go-s-iM3sy8IXGpS2e3KLAmW-ephp5dHwPB8ceGEzij395VJMtHAr9jD7IcYiUlGiS7ci_qDZpte3dQxBgczV8rAek5DM',
+    alt: 'Server hardware with neon blue internal lighting',
+    tags: ['RUST', 'KUBERNETES', 'GRPC'],
+    challenge:
+      'The client was losing confidence in an aging settlement stack that could not safely scale with intraday volume spikes and regional failover demands.',
+    solution:
+      'We rebuilt the core execution path in Rust, introduced gRPC-based service contracts, and shipped a Kubernetes deployment topology with safer rollback and observability baked in from day one.',
+    outcomes: [
+      'Safer multi-region failover without manual intervention',
+      'Cleaner service boundaries for audit and compliance review',
+      'Lower latency across the most critical settlement flows',
+    ],
+    metrics: [
+      { label: 'Peak Throughput', value: '2.8M tx/hr' },
+      { label: 'Availability Target', value: '99.999%' },
+      { label: 'Rollback Window', value: '< 5 min' },
+    ],
+    deliverables: [
+      'Core ledger microservices',
+      'Operational dashboards',
+      'Deployment and rollback pipeline',
+      'Incident response playbook',
+    ],
+  },
+  {
+    slug: 'build-002',
+    code: 'BUILD_002',
+    title: 'VOID INFRASTRUCTURE',
+    eyebrow: 'Zero-Trust Cloud Foundation',
+    category: 'Infrastructure',
+    description:
+      'Decentralized cloud architecture focusing on extreme data privacy and zero-trust security protocols.',
+    longDescription:
+      'Void Infrastructure was built for a privacy-first product team that wanted a hardened cloud base without the drag of bloated enterprise tooling. They needed clean provisioning, tighter secrets handling, and infrastructure changes that could be reviewed like product code.',
+    image:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuDTnDn0TZorH7lLkud9osl5oLFsK8LjLBieXDcO_WrtiMdYJYh0c1Ro8GJ9emIxF2c4FzGBHIpbQKa6CW3G9dA9ljDT-ziOwt7i9MNoI640KBl5vU4FER1TeGGw7PCaWFbdEzc6J7yfpzCglE8jVrSedRcjIORMTn-Y2X5fRZTPp3qUeuZtGZfz8wUx4-5J3s31tPLLwiMAPqIiCWtJAf4-g3r_5O8J1OK92T7EGPMGOsJ_tCgBeVtnWErLkNxoFmfj82EOo8YlYNU',
+    alt: 'Macro photo of high tech circuit board',
+    tags: ['GO', 'DOCKER', 'TERRAFORM'],
+    challenge:
+      'The team had inconsistent environments, weak access boundaries, and no reliable way to track what changed during infrastructure rollouts.',
+    solution:
+      'We introduced Terraform-managed provisioning, containerized workloads, and a zero-trust baseline for internal service access, paired with reviewable pipelines and environment parity.',
+    outcomes: [
+      'Infrastructure changes became predictable and reviewable',
+      'Security posture improved without slowing delivery',
+      'Faster recovery during environment drift incidents',
+    ],
+    metrics: [
+      { label: 'Provisioning Time', value: '15 min' },
+      { label: 'Service Isolation', value: '100%' },
+      { label: 'Drift Detection', value: 'Real-time' },
+    ],
+    deliverables: [
+      'Terraform modules',
+      'Hardened Docker build system',
+      'Access policy templates',
+      'Environment parity documentation',
+    ],
+  },
+  {
+    slug: 'build-003',
+    code: 'BUILD_003',
+    title: 'SYNAPSE API',
+    eyebrow: 'Fintech Integration Backbone',
+    category: 'Backend Systems',
+    description:
+      'The backbone for next-gen fintech integrations. Sub-millisecond latency for global transactions.',
+    longDescription:
+      'Synapse API unified multiple payment and banking workflows into a single integration layer. The platform needed to support global transaction volume, partner onboarding, and consistent contract enforcement without turning every release into a fire drill.',
+    image:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuCXuO_a9N98Eaj28fxw-aJnDbA9zkMkfV_6GAMd-HoCQNhIDjMeRDyMIbAYLxJKnTgH54sgvOf1Hh3zfhXoP0x7UyK9fSpFsfhHtnjN1ngIVMYjaik5pHF1qQSr6b-KNFDdsF9LhzHdscdx6sdS9-yUwU-xNG6BWOQiUI0AvOld7tj_cTdaFEQcLH_9YGMTT4ba17rdw-v_vRWQUWo62Vrvi2A_V1jccjUUn1vFV7HcvIC9blsODgujB917snfd_X2Qq6CuVW4M2T0',
+    alt: 'Deep blue digital connection web lines',
+    tags: ['NODE.JS', 'AWS', 'POSTGRES'],
+    challenge:
+      'Existing integrations were fragmented, hard to monitor, and slow to extend whenever a new banking partner entered the stack.',
+    solution:
+      'We designed a modular API gateway layer, centralized observability, and predictable data contracts that let the team add new transaction rails without rewriting their internal core.',
+    outcomes: [
+      'Shorter onboarding time for partner integrations',
+      'Better runtime visibility for support and ops teams',
+      'More stable release cycles on high-volume endpoints',
+    ],
+    metrics: [
+      { label: 'P95 Latency', value: '0.8 ms' },
+      { label: 'Daily Requests', value: '12M+' },
+      { label: 'Partner Launch Time', value: '-60%' },
+    ],
+    deliverables: [
+      'Gateway architecture',
+      'Contract versioning strategy',
+      'Operational alerting',
+      'Partner integration guides',
+    ],
+  },
+  {
+    slug: 'build-004',
+    code: 'BUILD_004',
+    title: 'TITAN UI FRAMEWORK',
+    eyebrow: 'Industrial Dashboard Design System',
+    category: 'Frontend Platform',
+    description:
+      'High-performance design system component library built for rapid deployment of industrial-scale dashboards.',
+    longDescription:
+      'Titan UI Framework gave an enterprise product suite one shared visual language without sacrificing speed. The goal was to unify product teams around reusable primitives, stronger accessibility, and a layout system that still felt aggressive and high signal.',
+    image:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuDdLxf3L3QYzZJJC7BgWksSm4ROMGSDvdR1ZUIZCBabe6tAlUPa6ZwxwjLRLXMsRRIWR1chBh45w3JRy0hj7PXD66G_rcLmMpaKoZNyLoZyfKgpBkKuIflERtl5Nmft7PgvY8dDFEKUcToFGbZ4b02qc_iNUyNltbtbsFe1J_EOcmREO9_E1tGtyS2kK2CpLomvhJFAOhBcRwVUUqd28W4yF9E4oHTnWi401j1jKY59Jc33ME3FPFhzkMF5uTSoKZndmISwPT4jlQ4',
+    alt: '3D technical blueprint layout wireframe',
+    tags: ['REACT', 'TYPESCRIPT', 'TAILWIND'],
+    challenge:
+      'Different product squads were reinventing components, creating visual drift, and shipping dashboards that felt unrelated to one another.',
+    solution:
+      'We built a typed React component system, tokenized spacing and typography, and created a rollout kit for product teams to adopt the framework incrementally instead of through a risky rewrite.',
+    outcomes: [
+      'UI consistency across multiple internal products',
+      'Faster dashboard delivery for new squads',
+      'Cleaner accessibility baseline for core interactions',
+    ],
+    metrics: [
+      { label: 'Reusable Components', value: '48' },
+      { label: 'Adoption Teams', value: '7 squads' },
+      { label: 'UI Delivery Speed', value: '+35%' },
+    ],
+    deliverables: [
+      'Component library',
+      'Design token layer',
+      'Documentation site',
+      'Migration starter kit',
+    ],
+  },
+]
+
+export const portfolioStats = [
+  { value: '124+', label: 'SYSTEMS_DEPLOYED' },
+  { value: '99.9%', label: 'UPTIME_RELIABILITY' },
+  { value: '12M+', label: 'API_REQUESTS_DAY' },
+  { value: '48HR', label: 'INCIDENT_RESPONSE' },
+] as const
+
+export function getPortfolioProject(slug: string) {
+  return portfolioProjects.find((project) => project.slug === slug)
+}

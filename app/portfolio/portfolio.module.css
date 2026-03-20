@@ -1,0 +1,47 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f9f9f9;
+  color: #1a1c1c;
+}
+
+.neoCard {
+  border: 3px solid #000000;
+  box-shadow: 8px 8px 0 0 #000000;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    filter 0.12s ease;
+}
+
+.neoCard:hover {
+  transform: translate(4px, 4px);
+  box-shadow: none;
+}
+
+.neoButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #000000;
+  box-shadow: 5px 5px 0 0 #000000;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    background-color 0.12s ease,
+    color 0.12s ease;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+}
+
+.neoButton:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0 0 #000000;
+}
+
+.neoButton:active {
+  transform: translate(5px, 5px);
+  box-shadow: none;
+}

@@ -1,0 +1,72 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  color: #000000;
+  background-color: #ffffff;
+  background-image:
+    linear-gradient(#e5e5e5 1px, transparent 1px),
+    linear-gradient(90deg, #e5e5e5 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.neoBox {
+  border: 3px solid #000000;
+  box-shadow: 5px 5px 0 0 #000000;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.neoBox:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0 0 #000000;
+}
+
+.neoButton {
+  display: inline-flex;
+  align-items: center;
+  border: 3px solid #000000;
+  box-shadow: 5px 5px 0 0 #000000;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    background-color 0.12s ease,
+    color 0.12s ease;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.neoButton:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0 0 #000000;
+}
+
+.neoButton:active {
+  transform: translate(3px, 3px);
+  box-shadow: 2px 2px 0 0 #000000;
+}
+
+.marqueeTrack {
+  display: flex;
+  gap: 3rem;
+  width: max-content;
+  animation: marquee 28s linear infinite;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(calc(-50% - 1.5rem));
+  }
+}
+
+@media (max-width: 768px) {
+  .marqueeTrack {
+    animation-duration: 20s;
+  }
+}
