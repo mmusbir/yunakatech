@@ -18,8 +18,8 @@ export default async function AdminDashboard() {
   const totalProjects = projects.length
   const totalPlans = plans.length
   const totalLeads = leads.length
-  const activeLeads = leads.filter((lead) => lead.status === 'active').length
-  const pendingLeads = leads.filter((lead) => lead.status === 'pending').length
+  const activeLeads = leads.filter((lead) => lead.status === 'new').length
+  const pendingLeads = leads.filter((lead) => lead.status === 'contacted').length
   const syncStatusText = syncStatus.ready ? 'Supabase sync is OK' : 'Supabase sync is NOT ready'
 
   return (
