@@ -70,7 +70,7 @@ export default function AdminShell({
             <span className="font-black">[D]</span>
             <span>Dashboard</span>
           </Link>
-          <Link className={getNavClass(activeNav === 'portfolio')} href="/admin">
+          <Link className={getNavClass(activeNav === 'portfolio')} href="/admin/portfolio">
             <span className="font-black">[P]</span>
             <span>Portfolio</span>
           </Link>
