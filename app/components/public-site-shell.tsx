@@ -8,6 +8,7 @@ import {
   PUBLIC_CONTENT_CLASS,
   PUBLIC_FRAME_CLASS,
 } from '@/app/lib/layout-widths'
+import PublicNavbar from '@/app/components/public-navbar'
 import {
   buildWhatsappHref,
   getSiteSettings,
@@ -23,46 +24,6 @@ interface PublicSiteShellProps {
   children: ReactNode
   pageClassName?: string
   activeNav?: PublicNavKey
-}
-
-const navItems: Array<{
-  key: PublicNavKey
-  label: string
-  homeHref: string
-  href: string
-}> = [
-  {
-    key: 'services',
-    label: 'Services',
-    homeHref: '#services',
-    href: '/#services',
-  },
-  {
-    key: 'portfolio',
-    label: 'Portfolio',
-    homeHref: '/portfolio',
-    href: '/portfolio',
-  },
-  {
-    key: 'testimonials',
-    label: 'Testimonials',
-    homeHref: '#testimonials',
-    href: '/#testimonials',
-  },
-  {
-    key: 'pricing',
-    label: 'Pricing',
-    homeHref: '#pricing',
-    href: '/#pricing',
-  },
-]
-
-function getNavClass(active: boolean) {
-  if (active) {
-    return 'border-b-[3px] border-[#ffd600] pb-1 text-sm font-black uppercase tracking-[-0.03em] text-black'
-  }
-
-  return 'text-sm font-black uppercase tracking-[-0.03em] text-black/60 transition-colors hover:text-black'
 }
 
 export default async function PublicSiteShell({
@@ -107,22 +68,7 @@ export default async function PublicSiteShell({
               )}
             </Link>
 
-            <div className="hidden items-center gap-6 md:flex">
-              {navItems.map((item) => {
-                const href =
-                  activeNav === 'services' ? item.homeHref : item.href
-
-                return (
-                  <Link
-                    key={item.key}
-                    className={getNavClass(activeNav === item.key)}
-                    href={href}
-                  >
-                    {item.label}
-                  </Link>
-                )
-              })}
-            </div>
+            <PublicNavbar activeNav={activeNav ?? 'services'} isHome={activeNav === 'services'} />
 
             <a
               className="hidden border-[3px] border-black bg-white px-5 py-2 text-xs font-black uppercase tracking-[-0.02em] text-black shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-x-[2px] hover:-translate-y-[2px] hover:bg-[#ffd600] hover:shadow-[7px_7px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] md:inline-flex"
