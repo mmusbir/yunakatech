@@ -1,12 +1,10 @@
-import Image from 'next/image'
 import Link from 'next/link'
 
 import AdminShell from '@/app/admin/admin-shell'
 import { requireAdminUser } from '@/app/admin/lib'
-import { deletePortfolioProjectAction } from '@/app/admin/portfolio/actions'
-import { getPortfolioProjects, getPortfolioSyncStatus } from '@/app/lib/portfolio-projects'
-
-const projectStatuses = ['ACTIVE', 'STAGING', 'INTERNAL', 'ACTIVE'] as const
+import { getPortfolioProjects, getPortfolioSyncStatus, portfolioStats } from '@/app/lib/portfolio-projects'
+import { getPricingPlans } from '@/app/lib/pricing-settings'
+import { getLeads } from '@/app/lib/leads'
 
 export const dynamic = 'force-dynamic'
 
@@ -14,10 +12,24 @@ export default async function AdminDashboard() {
   const user = await requireAdminUser()
   const projects = await getPortfolioProjects()
   const syncStatus = await getPortfolioSyncStatus()
+  const plans = await getPricingPlans()
+  const leads = await getLeads()
+
+  const totalProjects = projects.length
+  const totalPlans = plans.length
+  const totalLeads = leads.length
+  const activeLeads = leads.filter((lead) => lead.status === 'active').length
+  const pendingLeads = leads.filter((lead) => lead.status === 'pending').length
+  const syncStatusText = syncStatus.ready ? 'Supabase sync is OK' : 'Supabase sync is NOT ready'
 
   return (
     <AdminShell activeNav="dashboard" email={user.email}>
       <section className="space-y-6">
+        {!syncStatus.ready ? (
+          <div className="rounded-none border-4 border-black bg-[#ffdad6] p-4 font-black uppercase tracking-wide text-[#93000a]">
+            {syncStatusText}
+          </div>
+        ) : null}
         <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <h1 className="text-4xl font-black uppercase tracking-tighter italic text-black">
@@ -50,27 +62,52 @@ export default async function AdminDashboard() {
           </div>
         </header>
 
-        <section className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        <section className="grid grid-cols-1 gap-6 md:grid-cols-4">
           <div className="border-4 border-black bg-white p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-            <p className="font-black uppercase text-xs tracking-widest text-secondary">TOTAL LEADS</p>
+            <p className="font-black uppercase text-xs tracking-widest text-secondary">TOTAL PROJECTS</p>
             <div className="mt-4 flex items-end justify-between">
-              <span className="text-4xl font-black">1,284</span>
-              <span className="text-green-600 font-bold">+12%</span>
+              <span className="text-4xl font-black">{totalProjects}</span>
+              <span className="text-black/70 text-xs">from portfolio</span>
             </div>
           </div>
           <div className="border-4 border-black bg-[#ffd600] p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-            <p className="font-black uppercase text-xs tracking-widest text-black">LEADS TODAY</p>
+            <p className="font-black uppercase text-xs tracking-widest text-black">PRICING PLANS</p>
             <div className="mt-4 flex items-end justify-between">
-              <span className="text-4xl font-black">42</span>
-              <span className="bg-black text-white px-2 py-1 text-xs font-bold uppercase">NEW PEAK</span>
+              <span className="text-4xl font-black">{totalPlans}</span>
+              <span className="text-black/70 text-xs">active plans</span>
             </div>
           </div>
           <div className="border-4 border-black bg-white p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-            <p className="font-black uppercase text-xs tracking-widest text-secondary">CONVERSION RATE</p>
+            <p className="font-black uppercase text-xs tracking-widest text-secondary">TOTAL LEADS</p>
             <div className="mt-4 flex items-end justify-between">
-              <span className="text-4xl font-black">24.8%</span>
-              <span className="text-4xl">📈</span>
+              <span className="text-4xl font-black">{totalLeads}</span>
+              <span className="text-black/70 text-xs">incoming leads</span>
             </div>
+          </div>
+          <div className="border-4 border-black bg-white p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <p className="font-black uppercase text-xs tracking-widest text-secondary">OPEN LEADS</p>
+            <div className="mt-4 flex items-end justify-between">
+              <span className="text-4xl font-black">{activeLeads}</span>
+              <span className="text-black/70 text-xs">active</span>
+            </div>
+          </div>
+        </section>
+
+        <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
+          {portfolioStats.map((stat) => (
+            <div
+              key={stat.label}
+              className="border-4 border-black bg-white p-4 text-center shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]"
+            >
+              <p className="text-xs font-black uppercase tracking-widest text-secondary">
+                {stat.label.replace(/_/g, ' ')}
+              </p>
+              <p className="text-3xl font-black">{stat.value}</p>
+            </div>
+          ))}
+          <div className="border-4 border-black bg-white p-4 text-center shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
+            <p className="text-xs font-black uppercase tracking-widest text-secondary">PENDING LEADS</p>
+            <p className="text-3xl font-black">{pendingLeads}</p>
           </div>
         </section>
 

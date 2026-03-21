@@ -22,7 +22,7 @@ export class ApiClient {
    */
   async request<T>(
     endpoint: string,
-    options: RequestInit & { params?: Record<string, any> } = {}
+    options: RequestInit & { params?: Record<string, string | number | boolean> } = {}
   ): Promise<T> {
     try {
       const request = await createApiRequest(endpoint, options)
@@ -80,7 +80,7 @@ export class ApiClient {
   /**
    * GET request
    */
-  async get<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
+  async get<T>(endpoint: string, params?: Record<string, string | number | boolean>): Promise<T> {
     return this.request<T>(endpoint, {
       method: 'GET',
       params,
@@ -90,7 +90,7 @@ export class ApiClient {
   /**
    * POST request
    */
-  async post<T>(endpoint: string, data?: any, options?: RequestInit): Promise<T> {
+  async post<T, D>(endpoint: string, data?: D, options?: RequestInit): Promise<T> {
     return this.request<T>(endpoint, {
       method: 'POST',
       body: data ? JSON.stringify(data) : undefined,
@@ -101,7 +101,7 @@ export class ApiClient {
   /**
    * PUT request
    */
-  async put<T>(endpoint: string, data?: any, options?: RequestInit): Promise<T> {
+  async put<T, D>(endpoint: string, data?: D, options?: RequestInit): Promise<T> {
     return this.request<T>(endpoint, {
       method: 'PUT',
       body: data ? JSON.stringify(data) : undefined,
@@ -112,7 +112,7 @@ export class ApiClient {
   /**
    * PATCH request
    */
-  async patch<T>(endpoint: string, data?: any, options?: RequestInit): Promise<T> {
+  async patch<T, D>(endpoint: string, data?: D, options?: RequestInit): Promise<T> {
     return this.request<T>(endpoint, {
       method: 'PATCH',
       body: data ? JSON.stringify(data) : undefined,

@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 
 type PublicNavKey = 'services' | 'portfolio' | 'testimonials' | 'pricing'
@@ -35,60 +35,46 @@ interface PublicNavbarProps {
 export default function PublicNavbar({ activeNav, isHome }: PublicNavbarProps) {
   const [currentNav, setCurrentNav] = useState<PublicNavKey>(activeNav)
 
-  const resolveFromHash = useCallback(() => {
-    if (!isHome || typeof window === 'undefined') return
-
-    const hash = window.location.hash.replace('#', '') as PublicNavKey | ''
-    if (hash && ['services', 'testimonials', 'pricing'].includes(hash)) {
-      setCurrentNav(hash as PublicNavKey)
-    }
-  }, [isHome])
-
   useEffect(() => {
     if (!isHome) return
 
-    resolveFromHash()
+    const hashObserver = () => {
+      const hash = window.location.hash.replace('#', '') as PublicNavKey | ''
+      if (hash && ['services', 'testimonials', 'pricing'].includes(hash)) {
+        setCurrentNav(hash as PublicNavKey)
+      }
+    }
+
+    const timer = window.setTimeout(hashObserver, 0)
 
     const sectionIds: Array<PublicNavKey> = ['services', 'testimonials', 'pricing']
     const elements = sectionIds
       .map((id) => ({ id, el: document.getElementById(id) }))
       .filter((entry) => entry.el != null)
 
-    if (!elements.length) return
-
     const observer = new IntersectionObserver(
       (entries) => {
-        const visibleEntries = entries
+        const visible = entries
           .filter((entry) => entry.isIntersecting)
           .sort((a, b) => (b.intersectionRatio ?? 0) - (a.intersectionRatio ?? 0))
 
-        if (visibleEntries.length > 0) {
-          const topSection = visibleEntries[0].target.id as PublicNavKey
-          setCurrentNav(topSection)
+        if (visible.length > 0) {
+          const activeSection = visible[0].target.id as PublicNavKey
+          setCurrentNav(activeSection)
         }
       },
-      {
-        root: null,
-        rootMargin: '-50% 0px -40% 0px',
-        threshold: [0.15, 0.5, 0.85],
-      }
+      { root: null, rootMargin: '-50% 0px -40% 0px', threshold: [0.15, 0.5, 0.85] }
     )
 
     elements.forEach((entry) => observer.observe(entry.el!))
-
-    window.addEventListener('hashchange', resolveFromHash)
+    window.addEventListener('hashchange', hashObserver)
 
     return () => {
+      window.clearTimeout(timer)
       observer.disconnect()
-      window.removeEventListener('hashchange', resolveFromHash)
+      window.removeEventListener('hashchange', hashObserver)
     }
-  }, [isHome, resolveFromHash])
-
-  useEffect(() => {
-    if (!isHome) {
-      setCurrentNav(activeNav)
-    }
-  }, [isHome, activeNav])
+  }, [isHome])
 
   const linkData = useMemo(
     () =>

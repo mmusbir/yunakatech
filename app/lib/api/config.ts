@@ -130,17 +130,22 @@ export class ApiRequestError extends Error {
 }
 
 export async function handleApiError(response: Response): Promise<never> {
-  let data: any = {}
+  let data: unknown = {}
   try {
     data = await response.json()
   } catch {
     // Response body is not JSON
   }
   
+  const parsedError =
+    data && typeof data === 'object' && data !== null && 'code' in data && 'message' in data
+      ? (data as { code?: string; message?: string })
+      : {}
+
   const error = new ApiRequestError(
     response.status,
-    data.code || 'UNKNOWN_ERROR',
-    data.message || response.statusText || 'Unknown error'
+    parsedError.code || 'UNKNOWN_ERROR',
+    parsedError.message || response.statusText || 'Unknown error'
   )
   
   throw error
@@ -184,7 +189,7 @@ export async function createApiRequest(
 ): Promise<Request> {
   const { params, headers = {} } = config
   
-  let url = new URL(endpoint, apiConfig.baseURL)
+  const url = new URL(endpoint, apiConfig.baseURL)
   
   // Add query parameters
   if (params) {

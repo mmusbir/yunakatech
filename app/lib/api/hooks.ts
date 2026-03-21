@@ -4,7 +4,6 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import { apiClient } from './client'
-import { ApiRequestError } from './config'
 
 // ============================================================================
 // 1. TYPES
@@ -21,11 +20,11 @@ interface UseFetchState<T> {
 
 interface UseQueryOptions {
   skip?: boolean
-  depends?: any[]
+  depends?: unknown[]
 }
 
-interface UseMutationOptions {
-  onSuccess?: (data: any) => void
+interface UseMutationOptions<T = unknown> {
+  onSuccess?: (data: T) => void
   onError?: (error: Error) => void
   onSettled?: () => void
 }
@@ -34,7 +33,7 @@ interface UseMutationOptions {
 // 2. useQuery - For GET requests
 // ============================================================================
 
-export function useQuery<T = any>(
+export function useQuery<T = unknown>(
   endpoint: string,
   options: UseQueryOptions = {}
 ) {
@@ -70,7 +69,13 @@ export function useQuery<T = any>(
   }, [endpoint, options.skip])
   
   useEffect(() => {
-    fetchData()
+    const timer = window.setTimeout(() => {
+      fetchData()
+    }, 0)
+
+    return () => {
+      window.clearTimeout(timer)
+    }
   }, [fetchData, options.depends])
   
   return {
@@ -83,9 +88,9 @@ export function useQuery<T = any>(
 // 3. useMutation - For POST/PUT/PATCH/DELETE
 // ============================================================================
 
-export function useMutation<T = any, D = any>(
+export function useMutation<T = unknown, D = unknown>(
   method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',
-  options: UseMutationOptions = {}
+  options: UseMutationOptions<T> = {}
 ) {
   const [state, setState] = useState<UseFetchState<T>>({
     data: null,
@@ -103,13 +108,13 @@ export function useMutation<T = any, D = any>(
         
         switch (method) {
           case 'POST':
-            result = await apiClient.post<T>(endpoint, data)
+            result = await apiClient.post<T, D>(endpoint, data)
             break
           case 'PUT':
-            result = await apiClient.put<T>(endpoint, data)
+            result = await apiClient.put<T, D>(endpoint, data)
             break
           case 'PATCH':
-            result = await apiClient.patch<T>(endpoint, data)
+            result = await apiClient.patch<T, D>(endpoint, data)
             break
           case 'DELETE':
             result = await apiClient.delete<T>(endpoint)
@@ -200,9 +205,9 @@ function CreateLeadForm() {
   return (
     <form onSubmit={(e) => {
       e.preventDefault()
-      handleSubmit({ /* form data */ })
+      handleSubmit({} as CreateLeadData)
     }}>
-      {/* form fields */}
+      // form fields
       <button disabled={loading}>
         {loading ? 'Creating...' : 'Create'}
       </button>
@@ -242,7 +247,7 @@ function Dashboard() {
   return (
     <div>
       <h1>{user?.name}'s Portfolio</h1>
-      {/* Display portfolio */}
+      // Display portfolio placeholder
     </div>
   )
 }
