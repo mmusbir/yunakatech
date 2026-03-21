@@ -2,9 +2,10 @@
   "siteTitle": "Yunaka Tech - Full Product & Technical Solutions",
   "siteDescription": "Leading provider of innovative tech solutions, portfolio management, and expert services.",
   "whatsappNumber": "6281234567890",
+  "uiDensity": "compact",
   "logoText": "YUNAKA TECH",
   "logoTextItalic": true,
   "hideLogoText": false,
-  "logoImagePath": null,
-  "faviconPath": null
+  "logoImagePath": "/uploads/site/logo-1774057030633.png",
+  "faviconPath": "/uploads/site/favicon-1774057030678.png"
 }

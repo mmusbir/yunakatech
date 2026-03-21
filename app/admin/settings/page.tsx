@@ -41,16 +41,16 @@ export default async function AdminSettingsPage({
 
   return (
     <AdminShell activeNav="settings" email={user.email}>
-      <div className="mx-auto max-w-6xl">
-        <div className="mb-12">
-          <h2 className="mb-2 text-5xl font-black uppercase tracking-[-0.08em] leading-none md:text-6xl">
+      <div>
+        <div className="mb-8">
+          <h2 className="type-display-compact mb-2 text-black">
             GENERAL SETTINGS
           </h2>
-          <div className="h-2 w-32 border-[3px] border-black bg-[#ffd600]" />
+          <div className="h-2 w-24 border-[3px] border-black bg-[#ffd600]" />
         </div>
 
         {!syncStatus.ready ? (
-          <div className="mb-8 border-[3px] border-black bg-[#ffdad6] p-5 text-sm font-black uppercase tracking-[0.08em] text-[#93000a]">
+          <div className="mb-6 border-[3px] border-black bg-[#ffdad6] p-4 text-xs font-black uppercase tracking-[0.06em] text-[#93000a]">
             {syncStatus.reason === 'missing_table'
               ? 'Table public.site_settings belum ada di Supabase. Settings tetap tersimpan lokal, tapi untuk mengaktifkan sinkronisasi database kamu perlu jalankan SQL di `database/supabase-bootstrap.sql` lewat Supabase SQL Editor.'
               : 'Supabase sync belum aktif penuh. Settings tetap tersimpan lokal sampai koneksi server-side ke Supabase siap.'}
@@ -59,7 +59,7 @@ export default async function AdminSettingsPage({
 
         <SettingsForm initialSettings={settings} flash={flash} />
 
-        <div className="mt-20 grid grid-cols-1 gap-4 border-t-[3px] border-black pt-8 opacity-30 md:grid-cols-4 md:gap-6">
+        <div className="mt-12 grid grid-cols-1 gap-3 border-t-[3px] border-black pt-6 opacity-30 md:grid-cols-4 md:gap-4">
           <div className="text-[10px] font-black uppercase tracking-[0.2em]">
             SYSTEM_REF: 882-00X
           </div>

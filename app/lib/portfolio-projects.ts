@@ -1,3 +1,17 @@
+import 'server-only'
+
+import { mkdir, readFile, unlink, writeFile } from 'node:fs/promises'
+import path from 'node:path'
+
+import { unstable_noStore as noStore } from 'next/cache'
+
+import { getSupabase } from '@/app/lib/supabase'
+
+export interface PortfolioMetric {
+  label: string
+  value: string
+}
+
 export interface PortfolioProject {
   slug: string
   code: string
@@ -12,14 +26,23 @@ export interface PortfolioProject {
   challenge: string
   solution: string
   outcomes: string[]
-  metrics: Array<{
-    label: string
-    value: string
-  }>
+  metrics: PortfolioMetric[]
   deliverables: string[]
 }
 
-export const portfolioProjects: PortfolioProject[] = [
+const portfolioProjectsFilePath = path.join(
+  process.cwd(),
+  'data',
+  'portfolio-projects.json'
+)
+const portfolioUploadsDir = path.join(
+  process.cwd(),
+  'public',
+  'uploads',
+  'portfolio'
+)
+
+export const DEFAULT_PORTFOLIO_PROJECTS: PortfolioProject[] = [
   {
     slug: 'build-001',
     code: 'BUILD_001',
@@ -169,6 +192,223 @@ export const portfolioStats = [
   { value: '48HR', label: 'INCIDENT_RESPONSE' },
 ] as const
 
-export function getPortfolioProject(slug: string) {
-  return portfolioProjects.find((project) => project.slug === slug)
+function normalizeList(values: string[] | undefined, fallback: string[]) {
+  const filtered =
+    values?.map((value) => value.trim()).filter(Boolean) ?? fallback
+  return filtered.length > 0 ? filtered : fallback
+}
+
+function normalizeMetrics(
+  values: PortfolioMetric[] | undefined,
+  fallback: PortfolioMetric[]
+) {
+  const filtered =
+    values?.filter((metric) => metric.label.trim() && metric.value.trim()) ??
+    fallback
+  return filtered.length > 0 ? filtered : fallback
+}
+
+function normalizeProject(input: Partial<PortfolioProject> & { slug: string }) {
+  const defaults =
+    DEFAULT_PORTFOLIO_PROJECTS.find((project) => project.slug === input.slug) ??
+    DEFAULT_PORTFOLIO_PROJECTS[0]
+
+  return {
+    slug: input.slug,
+    code: input.code?.trim() || defaults.code,
+    title: input.title?.trim() || defaults.title,
+    eyebrow: input.eyebrow?.trim() || defaults.eyebrow,
+    category: input.category?.trim() || defaults.category,
+    description: input.description?.trim() || defaults.description,
+    longDescription: input.longDescription?.trim() || defaults.longDescription,
+    image: input.image?.trim() || defaults.image,
+    alt: input.alt?.trim() || defaults.alt,
+    tags: normalizeList(input.tags, defaults.tags),
+    challenge: input.challenge?.trim() || defaults.challenge,
+    solution: input.solution?.trim() || defaults.solution,
+    outcomes: normalizeList(input.outcomes, defaults.outcomes),
+    metrics: normalizeMetrics(input.metrics, defaults.metrics),
+    deliverables: normalizeList(input.deliverables, defaults.deliverables),
+  } satisfies PortfolioProject
+}
+
+function isMissingPortfolioTableError(error: { code?: string; message?: string }) {
+  return (
+    error.code === 'PGRST205' ||
+    error.message?.includes('public.portfolio_projects') === true
+  )
+}
+
+function getPublicAssetPath(fileName: string) {
+  return `/uploads/portfolio/${fileName}`
+}
+
+function getAbsoluteAssetPath(publicPath: string) {
+  return path.join(process.cwd(), 'public', publicPath.replace(/^\//, ''))
+}
+
+export async function deletePortfolioImageIfPresent(publicPath: string | null) {
+  if (!publicPath?.startsWith('/uploads/portfolio/')) {
+    return
+  }
+
+  try {
+    await unlink(getAbsoluteAssetPath(publicPath))
+  } catch {
+    // Ignore missing files.
+  }
+}
+
+export async function saveUploadedPortfolioImage(
+  file: File | null,
+  previousPath: string | null
+) {
+  if (!file || file.size === 0) {
+    return previousPath
+  }
+
+  if (file.size > 4 * 1024 * 1024) {
+    throw new Error('Image project maksimal 4MB.')
+  }
+
+  if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
+    throw new Error('Image project harus berformat PNG, JPG, atau WEBP.')
+  }
+
+  const extension =
+    file.type === 'image/png'
+      ? 'png'
+      : file.type === 'image/webp'
+        ? 'webp'
+        : 'jpg'
+
+  await mkdir(portfolioUploadsDir, { recursive: true })
+  await deletePortfolioImageIfPresent(previousPath)
+
+  const fileName = `project-${Date.now()}.${extension}`
+  const publicPath = getPublicAssetPath(fileName)
+  const absolutePath = getAbsoluteAssetPath(publicPath)
+  const buffer = Buffer.from(await file.arrayBuffer())
+
+  await writeFile(absolutePath, buffer)
+
+  return publicPath
+}
+
+export async function readPortfolioProjectsFile(): Promise<PortfolioProject[]> {
+  try {
+    const fileContents = await readFile(portfolioProjectsFilePath, 'utf8')
+    const parsed = JSON.parse(fileContents) as Array<Partial<PortfolioProject>>
+
+    return parsed
+      .filter((project): project is Partial<PortfolioProject> & { slug: string } =>
+        typeof project.slug === 'string' && project.slug.length > 0
+      )
+      .map((project) => normalizeProject(project))
+  } catch {
+    return DEFAULT_PORTFOLIO_PROJECTS
+  }
+}
+
+export async function writePortfolioProjectsFile(projects: PortfolioProject[]) {
+  await mkdir(path.dirname(portfolioProjectsFilePath), { recursive: true })
+  await writeFile(portfolioProjectsFilePath, JSON.stringify(projects, null, 2))
+}
+
+export async function getPortfolioProjects(): Promise<PortfolioProject[]> {
+  noStore()
+
+  try {
+    const supabase = getSupabase()
+    const { data, error } = await supabase
+      .from('portfolio_projects')
+      .select(
+        'slug, code, title, eyebrow, category, description, long_description, image_url, image_alt, tags, challenge, solution, outcomes, metrics, deliverables'
+      )
+      .order('code', { ascending: true })
+
+    if (error) {
+      if (!isMissingPortfolioTableError(error)) {
+        console.error('Supabase getPortfolioProjects error:', error.message)
+      }
+
+      return readPortfolioProjectsFile()
+    }
+
+    const rows =
+      data?.map((project) =>
+        normalizeProject({
+          slug: project.slug,
+          code: project.code,
+          title: project.title,
+          eyebrow: project.eyebrow,
+          category: project.category,
+          description: project.description,
+          longDescription: project.long_description,
+          image: project.image_url,
+          alt: project.image_alt,
+          tags: Array.isArray(project.tags) ? project.tags : undefined,
+          challenge: project.challenge,
+          solution: project.solution,
+          outcomes: Array.isArray(project.outcomes)
+            ? project.outcomes
+            : undefined,
+          metrics: Array.isArray(project.metrics)
+            ? (project.metrics as PortfolioMetric[])
+            : undefined,
+          deliverables: Array.isArray(project.deliverables)
+            ? project.deliverables
+            : undefined,
+        })
+      ) ?? []
+
+    return rows.length > 0 ? rows : DEFAULT_PORTFOLIO_PROJECTS
+  } catch {
+    return readPortfolioProjectsFile()
+  }
+}
+
+export async function getPortfolioProject(slug: string) {
+  const projects = await getPortfolioProjects()
+  return projects.find((project) => project.slug === slug)
+}
+
+export async function getPortfolioSyncStatus() {
+  noStore()
+
+  try {
+    const supabase = getSupabase()
+    const { error } = await supabase
+      .from('portfolio_projects')
+      .select('slug')
+      .limit(1)
+
+    if (error) {
+      return {
+        ready: false,
+        reason: isMissingPortfolioTableError(error)
+          ? 'missing_table'
+          : 'supabase_unavailable',
+      } as const
+    }
+
+    return {
+      ready: true,
+      reason: 'ok',
+    } as const
+  } catch {
+    return {
+      ready: false,
+      reason: 'missing_env',
+    } as const
+  }
+}
+
+export function slugifyProjectTitle(value: string) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 80)
 }

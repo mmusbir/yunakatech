@@ -6,11 +6,13 @@ import path from 'node:path'
 import { unstable_noStore as noStore } from 'next/cache'
 
 import { getSupabase } from '@/app/lib/supabase'
+import { getUiDensity, type UiDensity } from '@/app/lib/ui-density'
 
 export interface SiteSettings {
   siteTitle: string
   siteDescription: string
   whatsappNumber: string
+  uiDensity: UiDensity
   logoText: string
   logoTextItalic: boolean
   hideLogoText: boolean
@@ -23,6 +25,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   siteDescription:
     'Leading provider of innovative tech solutions, portfolio management, and expert services.',
   whatsappNumber: '6281234567890',
+  uiDensity: getUiDensity(),
   logoText: 'YUNAKA TECH',
   logoTextItalic: false,
   hideLogoText: false,
@@ -40,7 +43,8 @@ const siteUploadsDir = path.join(process.cwd(), 'public', 'uploads', 'site')
 function isMissingTableError(error: { code?: string; message?: string }) {
   return (
     error.code === 'PGRST205' ||
-    error.message?.includes("public.site_settings") === true
+    error.message?.includes("public.site_settings") === true ||
+    error.message?.includes('ui_density') === true
   )
 }
 
@@ -50,6 +54,10 @@ export function normalizeWhatsappNumber(value: string) {
 
 export function buildWhatsappHref(whatsappNumber: string) {
   return `https://wa.me/${normalizeWhatsappNumber(whatsappNumber)}`
+}
+
+export function normalizeUiDensity(value: string | null | undefined): UiDensity {
+  return value === 'comfortable' ? 'comfortable' : 'compact'
 }
 
 export async function readSiteSettingsFile(): Promise<SiteSettings> {
@@ -63,6 +71,7 @@ export async function readSiteSettingsFile(): Promise<SiteSettings> {
         parsed.siteDescription || DEFAULT_SITE_SETTINGS.siteDescription,
       whatsappNumber:
         parsed.whatsappNumber || DEFAULT_SITE_SETTINGS.whatsappNumber,
+      uiDensity: normalizeUiDensity(parsed.uiDensity),
       logoText: parsed.logoText || DEFAULT_SITE_SETTINGS.logoText,
       logoTextItalic:
         typeof parsed.logoTextItalic === 'boolean'
@@ -165,7 +174,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
   const { data, error } = await supabase
     .from('site_settings')
     .select(
-      'site_title, site_description, whatsapp_number, logo_text, logo_text_italic, hide_logo_text, logo_image_path, favicon_path'
+      'site_title, site_description, whatsapp_number, ui_density, logo_text, logo_text_italic, hide_logo_text, logo_image_path, favicon_path'
     )
     .eq('id', 1)
     .maybeSingle()
@@ -184,6 +193,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       data?.site_description || DEFAULT_SITE_SETTINGS.siteDescription,
     whatsappNumber:
       data?.whatsapp_number || DEFAULT_SITE_SETTINGS.whatsappNumber,
+    uiDensity: normalizeUiDensity(data?.ui_density),
     logoText: data?.logo_text || DEFAULT_SITE_SETTINGS.logoText,
     logoTextItalic:
       data?.logo_text_italic ?? DEFAULT_SITE_SETTINGS.logoTextItalic,
@@ -198,7 +208,10 @@ export async function getSiteSettingsSyncStatus() {
 
   try {
     const supabase = getSupabase()
-    const { error } = await supabase.from('site_settings').select('id').limit(1)
+    const { error } = await supabase
+      .from('site_settings')
+      .select('id, ui_density')
+      .limit(1)
 
     if (error) {
       return {

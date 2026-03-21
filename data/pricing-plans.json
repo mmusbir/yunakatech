@@ -1,0 +1,45 @@
+[
+  {
+    "id": "basic",
+    "name": "Basic",
+    "price": "Rp 1Jt",
+    "cta": "Get Basic",
+    "accent": "bg-white",
+    "highlighted": false,
+    "features": [
+      "5 Pages Design",
+      "Mobile Responsive",
+      "Basic SEO Setup"
+    ],
+    "order": 0
+  },
+  {
+    "id": "standard",
+    "name": "Standard",
+    "price": "Rp 5Jt",
+    "cta": "Get Standard",
+    "accent": "bg-[#ffd600]",
+    "highlighted": true,
+    "features": [
+      "Unlimited Pages",
+      "CMS Integration",
+      "Advanced SEO",
+      "Custom Animations"
+    ],
+    "order": 1
+  },
+  {
+    "id": "premium",
+    "name": "Premium",
+    "price": "Rp 15Jt+",
+    "cta": "Get Custom",
+    "accent": "bg-white",
+    "highlighted": false,
+    "features": [
+      "Custom Software Dev",
+      "E-commerce Engine",
+      "24/7 Priority Support"
+    ],
+    "order": 2
+  }
+]

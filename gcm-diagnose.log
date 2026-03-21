@@ -1,0 +1,195 @@
+﻿Diagnose log at 2026-03-20T19:42:33Z
+
+AppPath: C:\Program Files\Git\mingw64\bin\git-credential-manager.exe
+InstallDir: C:\Program Files\Git\mingw64\bin\
+Version: 2.6.1+786ab03440ddc82e807a97c0e540f5247e44cec6
+
+------------
+Diagnostic: Environment
+Skipped: False
+Success: True
+Exception: None
+Log:
+OSType: Windows
+OSVersion: 10.0 (build 26200)
+Reading environment variables... OK
+ Variables:
+HOMEPATH=\Users\Muh Musbir
+DriverData=C:\Windows\System32\Drivers\DriverData
+COMPUTERNAME=DESKTOP-VVAAGH7
+EFC_10584_1592913036=1
+GIT_TRACE2_PARENT_SID=290ab989-4182-4532-8f96-51e3ba8e9c4b
+CommonProgramFiles(x86)=C:\Program Files (x86)\Common Files
+OneDrive=C:\Users\Muh Musbir\OneDrive
+CODEX_THREAD_ID=019d0849-e479-7a22-a910-6ccf2e1b2d82
+SESSIONNAME=Console
+TMP=C:\Users\MUHMUS~1\AppData\Local\Temp
+PROCESSOR_REVISION=ba03
+EFC_10584_2775293581=1
+PATHEXT=.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.CPL
+EFC_10584_3789132940=1
+GIT_EXEC_PATH=C:/Program Files/Git/mingw64/libexec/git-core
+TEMP=C:\Users\MUHMUS~1\AppData\Local\Temp
+LOCALAPPDATA=C:\Users\Muh Musbir\AppData\Local
+MSYSTEM=MINGW64
+TERM=xterm-256color
+PROCESSOR_IDENTIFIER=Intel64 Family 6 Model 186 Stepping 3, GenuineIntel
+COLORTERM=truecolor
+windir=C:\WINDOWS
+USERDOMAIN=DESKTOP-VVAAGH7
+PROCESSOR_LEVEL=6
+NUMBER_OF_PROCESSORS=6
+TMPDIR=C:\Users\MUHMUS~1\AppData\Local\Temp
+VSCODE_IPC_HOOK=\\.\pipe\fd6dc528-1.111.0-main-sock
+EFC_10584_2283032206=1
+EFC_10584_1262719628=1
+ProgramFiles(x86)=C:\Program Files (x86)
+PUBLIC=C:\Users\Public
+VSCODE_NLS_CONFIG={"userLocale":"en-us","osLocale":"en-us","resolvedLanguage":"en","defaultMessagesFile":"C:\\Users\\Muh Musbir\\AppData\\Local\\Programs\\Microsoft VS Code\\ce099c1ed2\\resources\\app\\out\\nls.messages.json","locale":"en-us","availableLanguages":{}}
+CommonProgramFiles=C:\Program Files (x86)\Common Files
+VSCODE_ESM_ENTRYPOINT=vs/workbench/api/node/extensionHostProcess
+CHROME_CRASHPAD_PIPE_NAME=\\.\pipe\crashpad_20012_NLATAUTXZRMJOBGB
+PLINK_PROTOCOL=ssh
+ProgramData=C:\ProgramData
+ProgramW6432=C:\Program Files
+PATH=C:/Program Files/Git/mingw64/libexec/git-core;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Users\Muh Musbir\bin;C:\Users\Muh Musbir\.codex\tmp\arg0\codex-arg0p6YZvt;C:\Users\Muh Musbir\AppData\Local\Programs\Microsoft VS Code;C:\Program Files (x86)\Common Files\Oracle\Java\java8path;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\PuTTY\;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files (x86)\cloudflared\;C:\ProgramData\ComposerSetup\bin;D:\Laragon\bin\php\php-8.2.27-nts-Win32-vs16-x64;C:\Program Files\dotnet\;C:\Program Files\Tailscale\;C:\Users\Muh Musbir\AppData\Local\Microsoft\WindowsApps;C:\Users\Muh Musbir\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\Muh Musbir\AppData\Roaming\npm;C:\Users\Muh Musbir\AppData\Local\Programs\Antigravity\bin;C:\Users\Muh Musbir\AppData\Roaming\Composer\vendor\bin;c:\Users\Muh Musbir\.vscode\extensions\openai.chatgpt-26.5318.11754-win32-x64\bin\windows-x86_64
+ProgramFiles=C:\Program Files (x86)
+DEBUG=release
+VBOX_MSI_INSTALL_PATH=C:\Program Files\Oracle\VirtualBox\
+VSCODE_CODE_CACHE_PATH=C:\Users\Muh Musbir\AppData\Roaming\Code\CachedData\ce099c1ed25d9eb3076c11e4a280f3eb52b4fbeb
+SystemRoot=C:\WINDOWS
+HOME=C:\Users\Muh Musbir
+VSCODE_HANDLES_UNCAUGHT_ERRORS=true
+LC_CTYPE=C.UTF-8
+CommonProgramW6432=C:\Program Files\Common Files
+APPLICATION_INSIGHTS_NO_STATSBEAT=true
+LOGONSERVER=\\DESKTOP-VVAAGH7
+VSCODE_CWD=C:\Users\Muh Musbir\AppData\Local\Programs\Microsoft VS Code
+USERPROFILE=C:\Users\Muh Musbir
+CODEX_INTERNAL_ORIGINATOR_OVERRIDE=codex_vscode
+USERDOMAIN_ROAMINGPROFILE=DESKTOP-VVAAGH7
+APPDATA=C:\Users\Muh Musbir\AppData\Roaming
+HOMEDRIVE=C:
+RUST_LOG=warn
+VSCODE_PID=20012
+ZES_ENABLE_SYSMAN=1
+PSModulePath=C:\Users\Muh Musbir\Documents\WindowsPowerShell\Modules;C:\Program Files\WindowsPowerShell\Modules;C:\WINDOWS\system32\WindowsPowerShell\v1.0\Modules
+ELECTRON_RUN_AS_NODE=1
+USERNAME=Muh Musbir
+PROCESSOR_ARCHITEW6432=AMD64
+PROCESSOR_ARCHITECTURE=x86
+OS=Windows_NT
+ComSpec=C:\WINDOWS\system32\cmd.exe
+SystemDrive=C:
+VSCODE_CRASH_REPORTER_PROCESS_TYPE=extensionHost
+OneDriveConsumer=C:\Users\Muh Musbir\OneDrive
+ALLUSERSPROFILE=C:\ProgramData
+
+
+------------
+Diagnostic: File system
+Skipped: False
+Success: True
+Exception: None
+Log:
+Temporary directory is 'C:\Users\Muh Musbir\AppData\Local\Temp\'...
+Checking basic file I/O...
+Writing to temporary file 'C:\Users\Muh Musbir\AppData\Local\Temp\4e4649dea792afab7f943678'... OK
+Reading from temporary file 'C:\Users\Muh Musbir\AppData\Local\Temp\4e4649dea792afab7f943678'... OK
+Deleting temporary file 'C:\Users\Muh Musbir\AppData\Local\Temp\4e4649dea792afab7f943678'... OK
+Testing IFileSystem instance...
+UserHomePath: C:\Users\Muh Musbir
+UserDataDirectoryPath: C:\Users\Muh Musbir\.gcm
+GetCurrentDirectory(): D:\Laragon\www\yunakatech
+
+------------
+Diagnostic: Networking
+Skipped: False
+Success: True
+Exception: None
+Log:
+Checking networking and HTTP stack...
+Creating HTTP client... OK
+IsNetworkAvailable: True
+Sending HEAD request to http://example.com...Sending HEAD request to https://example.com... OK
+ OK
+Acquiring free TCP port... OK
+Testing local HTTP loopback connections...
+Creating new HTTP listener for http://localhost:57706/... OK
+Waiting for loopback connection... OK
+Writing response... OK
+Waiting for response data... OK
+Loopback connection data OK
+
+------------
+Diagnostic: Git
+Skipped: False
+Success: True
+Exception: None
+Log:
+Getting Git version... OK
+Git version is '2.50.1.windows.1'
+Locating current repository...Git repository at 'D:/Laragon/www/yunakatech/.git'
+ OK
+Listing all Git configuration... OK
+Git configuration:
+file:C:/Program Files/Git/etc/gitconfig	diff.astextplain.textconv=astextplain
+file:C:/Program Files/Git/etc/gitconfig	filter.lfs.clean=git-lfs clean -- %f
+file:C:/Program Files/Git/etc/gitconfig	filter.lfs.smudge=git-lfs smudge -- %f
+file:C:/Program Files/Git/etc/gitconfig	filter.lfs.process=git-lfs filter-process
+file:C:/Program Files/Git/etc/gitconfig	filter.lfs.required=true
+file:C:/Program Files/Git/etc/gitconfig	http.sslbackend=schannel
+file:C:/Program Files/Git/etc/gitconfig	core.autocrlf=true
+file:C:/Program Files/Git/etc/gitconfig	core.fscache=true
+file:C:/Program Files/Git/etc/gitconfig	core.symlinks=false
+file:C:/Program Files/Git/etc/gitconfig	pull.rebase=false
+file:C:/Program Files/Git/etc/gitconfig	credential.helper=manager
+file:C:/Program Files/Git/etc/gitconfig	credential.https://dev.azure.com.usehttppath=true
+file:C:/Program Files/Git/etc/gitconfig	init.defaultbranch=master
+file:C:/Users/Muh Musbir/.gitconfig	user.email=mmusbirr@gmail.com
+file:C:/Users/Muh Musbir/.gitconfig	user.name=Muhammad Musbir
+file:.git/config	core.repositoryformatversion=0
+file:.git/config	core.filemode=false
+file:.git/config	core.bare=false
+file:.git/config	core.logallrefupdates=true
+file:.git/config	core.symlinks=false
+file:.git/config	core.ignorecase=true
+file:.git/config	remote.origin.url=https://github.com/yunakatech/yunaka.com
+file:.git/config	remote.origin.fetch=+refs/heads/*:refs/remotes/origin/*
+
+
+------------
+Diagnostic: Credential storage
+Skipped: False
+Success: True
+Exception: None
+Log:
+ICredentialStore instance is of type: CredentialStore
+Writing test credential... OK
+Reading test credential... OK
+Deleting test credential... OK
+
+------------
+Diagnostic: Microsoft authentication (AAD/MSA)
+Skipped: False
+Success: True
+Exception: None
+Log:
+Broker is not enabled.
+Flow type is: Auto
+Gathering MSAL token cache data... OK
+CacheDirectory: C:\Users\Muh Musbir\AppData\Local\.IdentityService
+CacheFileName: msal.cache
+CacheFilePath: C:\Users\Muh Musbir\AppData\Local\.IdentityService\msal.cache
+Creating cache helper... OK
+Verifying MSAL token cache persistence... OK
+
+------------
+Diagnostic: GitHub API
+Skipped: False
+Success: True
+Exception: None
+Log:
+Using 'https://github.com/' as API target.
+Querying '/meta' endpoint... OK
+

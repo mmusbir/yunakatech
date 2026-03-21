@@ -2,176 +2,156 @@ import Link from 'next/link'
 
 import AdminShell from '@/app/admin/admin-shell'
 import { requireAdminUser } from '@/app/admin/lib'
-
-const pricingTiers = [
-  {
-    id: 'TIER 01',
-    name: 'BASIC',
-    price: '29.00',
-    accent: 'bg-white',
-    labelClass: 'text-gray-500',
-    inputClass:
-      'w-full border-[3px] border-black p-4 font-black uppercase tracking-[-0.05em] text-2xl outline-none transition-colors focus:bg-[#ffd600]',
-    priceInputClass:
-      'w-full border-[3px] border-black p-4 pl-10 font-black text-3xl outline-none transition-colors focus:bg-[#ffd600]',
-    featureInputClass:
-      'flex-1 border-[3px] border-black p-3 text-sm font-bold outline-none transition-colors focus:bg-[#ffd600]',
-    buttonClass:
-      'w-full border-2 border-dashed border-black p-3 text-xs font-bold uppercase transition-colors hover:bg-gray-50',
-    deleteClass: 'text-[#c0000a]',
-    features: [
-      '5 Users Included',
-      'Basic Analytics',
-      'Community Support',
-    ],
-  },
-  {
-    id: 'TIER 02',
-    name: 'STANDARD',
-    price: '79.00',
-    accent: 'bg-[#ffd600]',
-    labelClass: 'text-black',
-    inputClass:
-      'w-full border-[3px] border-black bg-white p-4 font-black uppercase tracking-[-0.05em] text-2xl outline-none transition-shadow focus:shadow-[0_0_0_4px_rgba(0,0,0,1)]',
-    priceInputClass:
-      'w-full border-[3px] border-black bg-white p-4 pl-10 font-black text-3xl outline-none transition-shadow focus:shadow-[0_0_0_4px_rgba(0,0,0,1)]',
-    featureInputClass:
-      'flex-1 border-[3px] border-black bg-white p-3 text-sm font-bold outline-none transition-shadow focus:shadow-[0_0_0_4px_rgba(0,0,0,1)]',
-    buttonClass:
-      'w-full border-2 border-dashed border-black p-3 text-xs font-bold uppercase transition-colors hover:bg-white/50',
-    deleteClass: 'text-black',
-    features: [
-      '25 Users Included',
-      'Advanced Analytics',
-      'Priority Support',
-      'Custom API Access',
-    ],
-  },
-  {
-    id: 'TIER 03',
-    name: 'PREMIUM',
-    price: '199.00',
-    accent: 'bg-white',
-    labelClass: 'text-gray-500',
-    inputClass:
-      'w-full border-[3px] border-black p-4 font-black uppercase tracking-[-0.05em] text-2xl outline-none transition-colors focus:bg-[#ffd600]',
-    priceInputClass:
-      'w-full border-[3px] border-black p-4 pl-10 font-black text-3xl outline-none transition-colors focus:bg-[#ffd600]',
-    featureInputClass:
-      'flex-1 border-[3px] border-black p-3 text-sm font-bold outline-none transition-colors focus:bg-[#ffd600]',
-    buttonClass:
-      'w-full border-2 border-dashed border-black p-3 text-xs font-bold uppercase transition-colors hover:bg-gray-50',
-    deleteClass: 'text-[#c0000a]',
-    features: [
-      'Unlimited Users',
-      'Predictive AI Tools',
-      'Dedicated Account Manager',
-      'Enterprise SLA',
-    ],
-  },
-] as const
+import { savePricingAction } from '@/app/admin/pricing/actions'
+import {
+  getPricingPlans,
+  getPricingSyncStatus,
+  type PricingPlan,
+} from '@/app/lib/pricing-settings'
 
 export const dynamic = 'force-dynamic'
 
-export default async function AdminPricingPage() {
+function getFlashFromSearchParams(
+  status: string | string[] | undefined,
+  message: string | string[] | undefined
+) {
+  return {
+    status:
+      typeof status === 'string' && (status === 'success' || status === 'error')
+        ? status
+        : 'idle',
+    message: typeof message === 'string' ? message : '',
+  } as const
+}
+
+function getFeatureSlots(plan: PricingPlan) {
+  return Array.from({ length: 4 }, (_, index) => plan.features[index] ?? '')
+}
+
+export default async function AdminPricingPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}) {
   const user = await requireAdminUser()
+  const plans = await getPricingPlans()
+  const syncStatus = await getPricingSyncStatus()
+  const resolvedSearchParams = await searchParams
+  const flash = getFlashFromSearchParams(
+    resolvedSearchParams.status,
+    resolvedSearchParams.message
+  )
 
   return (
     <AdminShell activeNav="pricing" email={user.email}>
-      <section className="mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+      <section className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <h2 className="mb-2 text-5xl font-black uppercase tracking-[-0.08em] leading-none md:text-6xl">
+          <h2 className="type-display-compact mb-2 text-black">
             PRICING MANAGEMENT
           </h2>
-          <div className="h-2 w-48 border-[3px] border-black bg-[#ffd600]" />
+          <div className="h-2 w-36 border-[3px] border-black bg-[#ffd600]" />
         </div>
 
         <button
-          type="button"
-          className="w-full border-[3px] border-black bg-[#ffd600] px-8 py-4 text-xl font-black uppercase tracking-[-0.05em] text-black shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-[7px_7px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] md:w-auto"
+          form="pricing-management-form"
+          type="submit"
+          className="w-full border-[3px] border-black bg-[#ffd600] px-6 py-3 text-base font-black uppercase tracking-[-0.05em] text-black shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-[7px_7px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] md:w-auto"
         >
           UPDATE PRICES
         </button>
       </section>
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-        {pricingTiers.map((tier, index) => (
-          <article
-            key={tier.id}
-            className={`relative flex flex-col gap-6 overflow-hidden border-[3px] border-black p-8 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] ${tier.accent}`}
-          >
-            {index === 1 ? (
-              <div className="absolute left-0 top-0 h-2 w-full bg-black" />
-            ) : null}
+      {!syncStatus.ready ? (
+        <div className="mb-6 border-[3px] border-black bg-[#ffdad6] p-4 text-xs font-black uppercase tracking-[0.06em] text-[#93000a]">
+          {syncStatus.reason === 'missing_table'
+            ? 'Table public.pricing_plans belum ada di Supabase. Pricing tetap tersimpan lokal, tapi untuk sinkronisasi database kamu perlu jalankan SQL di database/supabase-bootstrap.sql.'
+            : 'Supabase sync untuk pricing belum aktif penuh. Perubahan tetap tersimpan lokal sampai koneksi server-side siap.'}
+        </div>
+      ) : null}
 
-            <div className="absolute -right-6 -top-1 rotate-12 bg-black px-8 py-6 text-xs font-black uppercase text-white">
-              {tier.id}
-            </div>
+      {flash.message ? (
+        <div
+          className={`mb-6 border-[3px] p-3 text-xs font-black uppercase tracking-[0.08em] ${
+            flash.status === 'success'
+              ? 'border-black bg-[#ffd600] text-black'
+              : 'border-black bg-[#ffdad6] text-[#93000a]'
+          }`}
+        >
+          {flash.message}
+        </div>
+      ) : null}
 
-            <div className="space-y-2">
-              <label
-                className={`block text-xs font-black uppercase tracking-[0.25em] ${tier.labelClass}`}
-              >
-                PACKAGE NAME
-              </label>
-              <input
-                className={tier.inputClass}
-                defaultValue={tier.name}
-                type="text"
-              />
-            </div>
+      <form
+        id="pricing-management-form"
+        action={savePricingAction}
+        className="space-y-8"
+      >
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          {plans.map((plan, index) => (
+            <article
+              key={plan.id}
+              className={`relative flex flex-col gap-5 overflow-hidden border-[3px] border-black p-6 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] ${
+                plan.highlighted ? 'bg-[#ffd600]' : 'bg-white'
+              }`}
+            >
+              {plan.highlighted ? (
+                <div className="absolute left-0 top-0 h-2 w-full bg-black" />
+              ) : null}
 
-            <div className="space-y-2">
-              <label
-                className={`block text-xs font-black uppercase tracking-[0.25em] ${tier.labelClass}`}
-              >
-                MONTHLY PRICE ($)
-              </label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-black">
-                  $
-                </span>
+              <div className="absolute -right-6 -top-1 rotate-12 bg-black px-6 py-4 text-[10px] font-black uppercase text-white">
+                {`TIER 0${index + 1}`}
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-[10px] font-black uppercase tracking-[0.18em] text-black/70">
+                  PACKAGE NAME
+                </label>
                 <input
-                  className={tier.priceInputClass}
-                  defaultValue={tier.price}
+                  className="w-full border-[3px] border-black bg-white p-3 text-xl font-black uppercase tracking-[-0.05em] outline-none transition-colors focus:bg-[#ffe170]"
+                  defaultValue={plan.name}
+                  name={`${plan.id}_name`}
                   type="text"
                 />
               </div>
-            </div>
 
-            <div className="flex flex-1 flex-col gap-4">
-              <label
-                className={`block text-xs font-black uppercase tracking-[0.25em] ${tier.labelClass}`}
-              >
-                FEATURES LIST
-              </label>
-              <div className="space-y-3">
-                {tier.features.map((feature) => (
-                  <div key={feature} className="flex items-center gap-3">
+              <div className="space-y-2">
+                <label className="block text-[10px] font-black uppercase tracking-[0.18em] text-black/70">
+                  PRICE
+                </label>
+                <input
+                  className="w-full border-[3px] border-black bg-white p-3 text-2xl font-black tracking-[-0.05em] outline-none transition-colors focus:bg-[#ffe170]"
+                  defaultValue={plan.price}
+                  name={`${plan.id}_price`}
+                  type="text"
+                />
+              </div>
+
+              <div className="flex flex-1 flex-col gap-3">
+                <label className="block text-[10px] font-black uppercase tracking-[0.18em] text-black/70">
+                  FEATURES LIST
+                </label>
+                <div className="space-y-3">
+                  {getFeatureSlots(plan).map((feature, featureIndex) => (
                     <input
-                      className={tier.featureInputClass}
+                      key={`${plan.id}-${featureIndex}`}
+                      className="w-full border-[3px] border-black bg-white p-2.5 text-xs font-bold uppercase outline-none transition-colors focus:bg-[#ffe170]"
                       defaultValue={feature}
+                      name={`${plan.id}_feature_${featureIndex}`}
+                      placeholder={`Feature ${featureIndex + 1}`}
                       type="text"
                     />
-                    <button
-                      type="button"
-                      className={`text-sm font-black uppercase ${tier.deleteClass}`}
-                    >
-                      DELETE
-                    </button>
-                  </div>
-                ))}
-
-                <button type="button" className={tier.buttonClass}>
-                  + ADD FEATURE
-                </button>
+                  ))}
+                </div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-black/60">
+                  Kosongkan baris feature untuk menghapus item yang tidak perlu.
+                </p>
               </div>
-            </div>
-          </article>
-        ))}
-      </div>
+            </article>
+          ))}
+        </div>
+      </form>
 
-      <footer className="mt-20 flex flex-col gap-6 border-t-[3px] border-black pt-8 text-[10px] font-black uppercase tracking-[0.2em] md:flex-row md:items-center md:justify-between">
+      <footer className="mt-12 flex flex-col gap-4 border-t-[3px] border-black pt-6 text-[10px] font-black uppercase tracking-[0.18em] md:flex-row md:items-center md:justify-between">
         <div className="flex flex-col gap-4 md:flex-row md:gap-8">
           <div className="flex items-center gap-2">
             <span className="h-2 w-2 bg-[#705d00]" />
@@ -194,13 +174,6 @@ export default async function AdminPricingPage() {
           </Link>
         </div>
       </footer>
-
-      <button
-        type="button"
-        className="fixed bottom-8 right-8 z-50 flex h-16 w-16 items-center justify-center border-[3px] border-black bg-black text-white shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-[7px_7px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-      >
-        SY
-      </button>
     </AdminShell>
   )
 }

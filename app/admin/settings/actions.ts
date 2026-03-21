@@ -1,16 +1,16 @@
 'use server'
 
-import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 
 import {
   getSiteSettings,
+  normalizeUiDensity,
   normalizeWhatsappNumber,
   saveUploadedAsset,
   writeSiteSettingsFile,
 } from '@/app/lib/site-settings'
+import { getSupabase } from '@/app/lib/supabase'
 import { requireAdminUser } from '@/app/admin/lib'
-import { createClient } from '@/utils/supabase/server'
 
 export interface SettingsActionState {
   status: 'idle' | 'success' | 'error'
@@ -20,7 +20,8 @@ export interface SettingsActionState {
 function isMissingTableError(error: { code?: string; message?: string }) {
   return (
     error.code === 'PGRST205' ||
-    error.message?.includes("public.site_settings") === true
+    error.message?.includes("public.site_settings") === true ||
+    error.message?.includes('ui_density') === true
   )
 }
 
@@ -35,6 +36,7 @@ export async function saveSettingsAction(
   const logoText = String(formData.get('logoText') ?? '').trim()
   const logoTextItalic = formData.get('logoTextItalic') === 'on'
   const hideLogoText = formData.get('hideLogoText') === 'on'
+  const uiDensity = normalizeUiDensity(String(formData.get('uiDensity') ?? ''))
   const whatsappNumber = normalizeWhatsappNumber(
     String(formData.get('whatsappNumber') ?? '')
   )
@@ -90,6 +92,7 @@ export async function saveSettingsAction(
     siteTitle,
     siteDescription,
     whatsappNumber,
+    uiDensity,
     logoText,
     logoTextItalic,
     hideLogoText,
@@ -106,8 +109,7 @@ export async function saveSettingsAction(
     )
   }
 
-  const cookieStore = await cookies()
-  const supabase = createClient(cookieStore)
+  const supabase = getSupabase()
 
   const { error } = await supabase.from('site_settings').upsert(
     {
@@ -115,6 +117,7 @@ export async function saveSettingsAction(
       site_title: nextSettings.siteTitle,
       site_description: nextSettings.siteDescription,
       whatsapp_number: nextSettings.whatsappNumber,
+      ui_density: nextSettings.uiDensity,
       logo_text: nextSettings.logoText,
       logo_text_italic: nextSettings.logoTextItalic,
       hide_logo_text: nextSettings.hideLogoText,
