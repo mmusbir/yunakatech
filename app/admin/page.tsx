@@ -4,184 +4,213 @@ import Link from 'next/link'
 import AdminShell from '@/app/admin/admin-shell'
 import { requireAdminUser } from '@/app/admin/lib'
 import { deletePortfolioProjectAction } from '@/app/admin/portfolio/actions'
-import {
-  getPortfolioProjects,
-  getPortfolioSyncStatus,
-} from '@/app/lib/portfolio-projects'
+import { getPortfolioProjects, getPortfolioSyncStatus } from '@/app/lib/portfolio-projects'
 
 const projectStatuses = ['ACTIVE', 'STAGING', 'INTERNAL', 'ACTIVE'] as const
 
 export const dynamic = 'force-dynamic'
 
-function getFlashFromSearchParams(
-  status: string | string[] | undefined,
-  message: string | string[] | undefined
-) {
-  return {
-    status:
-      typeof status === 'string' && (status === 'success' || status === 'error')
-        ? status
-        : 'idle',
-    message: typeof message === 'string' ? message : '',
-  } as const
-}
-
-export default async function AdminDashboard({
-  searchParams,
-}: {
-  searchParams: Promise<Record<string, string | string[] | undefined>>
-}) {
+export default async function AdminDashboard() {
   const user = await requireAdminUser()
   const projects = await getPortfolioProjects()
   const syncStatus = await getPortfolioSyncStatus()
-  const resolvedSearchParams = await searchParams
-  const flash = getFlashFromSearchParams(
-    resolvedSearchParams.status,
-    resolvedSearchParams.message
-  )
 
   return (
-    <AdminShell activeNav="portfolio" email={user.email}>
-      <div className="mb-8 flex flex-col items-start justify-between gap-5 md:flex-row md:items-end">
-        <div className="max-w-xl">
-          <h2 className="type-display-compact text-black">
-            PORTFOLIO <br />
-            MANAGEMENT
-          </h2>
-          <p className="type-lead mt-3 max-w-lg text-black/60">
-            Manage the technical blueprint of our digital footprint. Add, edit,
-            or purge project records from the global catalog.
-          </p>
-        </div>
-
-        <Link
-          href="/admin/portfolio/new"
-          className="border-[3px] border-black bg-[#ffd600] px-6 py-3 text-base font-black uppercase tracking-[-0.05em] text-black shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-[7px_7px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-        >
-          ADD NEW PROJECT
-        </Link>
-      </div>
-
-      {!syncStatus.ready ? (
-        <div className="mb-6 border-[3px] border-black bg-[#ffdad6] p-4 text-xs font-black uppercase tracking-[0.06em] text-[#93000a]">
-          {syncStatus.reason === 'missing_table'
-            ? 'Table public.portfolio_projects belum ada di Supabase. Portfolio tetap tersimpan lokal, tapi untuk sinkronisasi database kamu perlu jalankan SQL di database/supabase-bootstrap.sql.'
-            : 'Supabase sync untuk portfolio belum aktif penuh. Perubahan tetap tersimpan lokal sampai koneksi server-side siap.'}
-        </div>
-      ) : null}
-
-      {flash.message ? (
-        <div
-          className={`mb-6 border-[3px] p-3 text-xs font-black uppercase tracking-[0.08em] ${
-            flash.status === 'success'
-              ? 'border-black bg-[#ffd600] text-black'
-              : 'border-black bg-[#ffdad6] text-[#93000a]'
-          }`}
-        >
-          {flash.message}
-        </div>
-      ) : null}
-
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {projects.map((project, index) => (
-          <article
-            key={project.slug}
-            className="flex h-full flex-col border-[3px] border-black bg-white p-5 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-[7px_7px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-          >
-            <div className="group relative mb-5 aspect-video w-full overflow-hidden border-[3px] border-black bg-[#eeeeee]">
-              <Image
-                alt={project.alt}
-                className="h-full w-full object-cover"
-                height={720}
-                src={project.image}
-                sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-                width={1280}
+    <AdminShell activeNav="dashboard" email={user.email}>
+      <section className="space-y-6">
+        <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h1 className="text-4xl font-black uppercase tracking-tighter italic text-black">
+              ADMIN COMMAND CENTER
+            </h1>
+            <p className="text-sm font-bold uppercase text-secondary mt-1">
+              SYSTEM STATUS: <span className="text-primary underline">OPERATIONAL</span>
+            </p>
+          </div>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="SEARCH SYSTEM..."
+                className="w-72 rounded-none border-4 border-black bg-white px-10 py-2 font-bold outline-none focus:bg-[#ffd600]"
               />
-              <div className="absolute inset-0 bg-[#ffd600] opacity-0 transition-opacity group-hover:opacity-20" />
-              <div className="absolute left-4 top-4 bg-black px-3 py-1 text-xs font-black uppercase tracking-[0.2em] text-white">
-                {projectStatuses[index % projectStatuses.length]}
-              </div>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-black font-bold">🔍</span>
             </div>
-
-            <div className="flex-1">
-              <h3 className="mb-2 text-2xl font-black uppercase tracking-[-0.05em]">
-                {project.title}
-              </h3>
-              <p className="mb-5 text-sm font-bold leading-relaxed text-black/70">
-                {project.description}
-              </p>
-
-              <div className="mb-6 flex flex-wrap gap-2">
-                {project.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="border-[2px] border-black bg-[#e2e2e2] px-2 py-1 text-[10px] font-black uppercase"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex gap-3">
-              <Link
-                href={`/admin/portfolio/${project.slug}/edit`}
-                className="flex flex-1 items-center justify-center gap-2 border-[3px] border-black bg-white py-2.5 text-xs font-black uppercase tracking-[-0.04em] text-black shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] transition-all hover:bg-[#e8e8e8] hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-[7px_7px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-              >
-                <span>[E]</span>
-                EDIT
+            <div className="hidden lg:flex items-center gap-4">
+              <Link href="#" className="text-black underline decoration-4 font-bold uppercase tracking-tighter">
+                Overview
               </Link>
-              <form action={deletePortfolioProjectAction} className="flex-1">
-                <input type="hidden" name="slug" value={project.slug} />
-                <button
-                  type="submit"
-                  className="flex w-full items-center justify-center gap-2 border-[3px] border-black bg-white py-2.5 text-xs font-black uppercase tracking-[-0.04em] text-[#c0000a] shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] transition-all hover:bg-[#ffcec7] hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-[7px_7px_0px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-                >
-                  <span>[X]</span>
-                  DELETE
-                </button>
-              </form>
+              <Link href="#" className="text-black font-bold uppercase tracking-tighter hover:bg-[#ffd600] px-2">
+                Analytics
+              </Link>
+              <Link href="#" className="text-black font-bold uppercase tracking-tighter hover:bg-[#ffd600] px-2">
+                Nodes
+              </Link>
             </div>
-          </article>
-        ))}
-
-        <div className="flex min-h-[300px] flex-col items-center justify-center border-[3px] border-dashed border-black p-5 opacity-40">
-          <div className="mb-3 text-4xl font-black">[+]</div>
-          <p className="px-6 text-center text-lg font-black uppercase tracking-[-0.05em]">
-            NEW BLUEPRINT ENTRY
-          </p>
-          <Link
-            href="/admin/portfolio/new"
-            className="mt-5 border-[3px] border-black px-5 py-2 text-[10px] font-black uppercase transition-all hover:bg-black hover:text-white"
-          >
-            INITIALIZE
-          </Link>
-        </div>
-      </div>
-
-      <footer className="mt-12 flex flex-col gap-4 border-t-[3px] border-black pt-6 text-[10px] font-black uppercase tracking-[0.18em] md:mt-14 md:flex-row md:items-center md:justify-between">
-        <div className="flex flex-col gap-4 md:flex-row md:gap-8">
-          <div className="flex items-center gap-2">
-            <span className="h-2 w-2 bg-[#705d00]" />
-            SYSTEMS NOMINAL
           </div>
-          <div className="flex items-center gap-2 opacity-50">
-            <span className="h-2 w-2 bg-black" />
-            SYNCED: 12:44:01 GMT
+        </header>
+
+        <section className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div className="border-4 border-black bg-white p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <p className="font-black uppercase text-xs tracking-widest text-secondary">TOTAL LEADS</p>
+            <div className="mt-4 flex items-end justify-between">
+              <span className="text-4xl font-black">1,284</span>
+              <span className="text-green-600 font-bold">+12%</span>
+            </div>
           </div>
+          <div className="border-4 border-black bg-[#ffd600] p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <p className="font-black uppercase text-xs tracking-widest text-black">LEADS TODAY</p>
+            <div className="mt-4 flex items-end justify-between">
+              <span className="text-4xl font-black">42</span>
+              <span className="bg-black text-white px-2 py-1 text-xs font-bold uppercase">NEW PEAK</span>
+            </div>
+          </div>
+          <div className="border-4 border-black bg-white p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <p className="font-black uppercase text-xs tracking-widest text-secondary">CONVERSION RATE</p>
+            <div className="mt-4 flex items-end justify-between">
+              <span className="text-4xl font-black">24.8%</span>
+              <span className="text-4xl">📈</span>
+            </div>
+          </div>
+        </section>
+
+        <div className="grid grid-cols-1 gap-10 xl:grid-cols-3">
+          <section className="xl:col-span-2 space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-3xl font-black uppercase">Active Leads Pipeline</h2>
+              <button className="rounded-none border-2 border-black bg-black px-4 py-2 text-sm font-bold uppercase text-white hover:bg-[#ffd600] hover:text-black">
+                Export CSV
+              </button>
+            </div>
+            <div className="overflow-x-auto border-4 border-black bg-white shadow-[10px_10px_0px_0px_rgba(0,0,0,1)]">
+              <table className="min-w-full border-collapse">
+                <thead className="bg-slate-100">
+                  <tr>
+                    <th className="border-3 border-black p-4 text-left text-xs font-black uppercase">Client Name</th>
+                    <th className="border-3 border-black p-4 text-left text-xs font-black uppercase">Service</th>
+                    <th className="border-3 border-black p-4 text-left text-xs font-black uppercase">Status</th>
+                    <th className="border-3 border-black p-4 text-left text-xs font-black uppercase">Date</th>
+                    <th className="border-3 border-black p-4 text-left text-xs font-black uppercase">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="font-bold">
+                  <tr>
+                    <td className="border-3 border-black p-4">Global Dynamics</td>
+                    <td className="border-3 border-black p-4">AI Infrastructure</td>
+                    <td className="border-3 border-black p-4"><span className="bg-[#ffd600] border-2 border-black px-3 py-1 text-xs uppercase font-black">New</span></td>
+                    <td className="border-3 border-black p-4">OCT 24, 2023</td>
+                    <td className="border-3 border-black p-4 flex gap-2"><button className="text-sm font-black">👁</button><button className="text-sm font-black">✎</button></td>
+                  </tr>
+                  <tr>
+                    <td className="border-3 border-black p-4">Nova Soft</td>
+                    <td className="border-3 border-black p-4">Cloud Migration</td>
+                    <td className="border-3 border-black p-4"><span className="bg-blue-500 text-white border-2 border-black px-3 py-1 text-xs uppercase font-black">Contacted</span></td>
+                    <td className="border-3 border-black p-4">OCT 23, 2023</td>
+                    <td className="border-3 border-black p-4 flex gap-2"><button className="text-sm font-black">👁</button><button className="text-sm font-black">✎</button></td>
+                  </tr>
+                  <tr>
+                    <td className="border-3 border-black p-4">Apex Systems</td>
+                    <td className="border-3 border-black p-4">Cyber Audit</td>
+                    <td className="border-3 border-black p-4"><span className="bg-green-500 text-white border-2 border-black px-3 py-1 text-xs uppercase font-black">Deal</span></td>
+                    <td className="border-3 border-black p-4">OCT 22, 2023</td>
+                    <td className="border-3 border-black p-4 flex gap-2"><button className="text-sm font-black">👁</button><button className="text-sm font-black">✎</button></td>
+                  </tr>
+                  <tr>
+                    <td className="border-3 border-black p-4">ByteCorp</td>
+                    <td className="border-3 border-black p-4">Edge Computing</td>
+                    <td className="border-3 border-black p-4"><span className="bg-red-500 text-white border-2 border-black px-3 py-1 text-xs uppercase font-black">Lost</span></td>
+                    <td className="border-3 border-black p-4">OCT 21, 2023</td>
+                    <td className="border-3 border-black p-4 flex gap-2"><button className="text-sm font-black">👁</button><button className="text-sm font-black">✎</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <aside className="space-y-6">
+            <div className="border-4 border-black bg-white p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+              <h3 className="mb-4 text-xl font-black uppercase border-b-4 border-black pb-2">Infrastructure</h3>
+              <div className="space-y-4">
+                <div>
+                  <div className="mb-1 flex justify-between text-xs font-black uppercase">
+                    <span>Server Load</span>
+                    <span>78%</span>
+                  </div>
+                  <div className="h-6 w-full border-4 border-black bg-slate-200">
+                    <div className="h-full w-[78%] bg-[#ffd600] border-r-4 border-black"></div>
+                  </div>
+                </div>
+                <div>
+                  <div className="mb-1 flex justify-between text-xs font-black uppercase">
+                    <span>Memory Usage</span>
+                    <span>45%</span>
+                  </div>
+                  <div className="h-6 w-full border-4 border-black bg-slate-200">
+                    <div className="h-full w-[45%] bg-[#ffd600] border-r-4 border-black"></div>
+                  </div>
+                </div>
+                <div>
+                  <div className="mb-1 flex justify-between text-xs font-black uppercase">
+                    <span>Disk Space</span>
+                    <span>92%</span>
+                  </div>
+                  <div className="h-6 w-full border-4 border-black bg-slate-200">
+                    <div className="h-full w-[92%] bg-red-500 border-r-4 border-black"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="border-4 border-black bg-black p-6 text-yellow-400 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+              <div className="mb-3 flex items-center justify-between border-b border-yellow-400/30 pb-2">
+                <span className="font-bold">SYSTEM_LOGS_V2.0</span>
+                <span className="animate-pulse">● LIVE</span>
+              </div>
+              <div className="max-h-48 space-y-1 overflow-y-auto text-xs font-mono">
+                <p className="opacity-80">[10:24:01] INCOMING_LEAD: GLOBAL DYNAMICS</p>
+                <p className="opacity-80">[10:22:45] NODE_04_SYNC_SUCCESS</p>
+                <p className="text-red-500">[10:20:12] DISK_SPACE_CRITICAL: 92%</p>
+                <p className="opacity-80">[10:15:33] AUTH_TOKEN_REFRESHED</p>
+                <p className="opacity-80">[10:12:01] DB_QUERY_OPTIMIZED</p>
+                <p className="opacity-80">[10:08:44] REVENUE_SYNC_COMPLETE</p>
+              </div>
+              <div className="mt-2 border-t border-yellow-400/30 pt-2 text-xs">
+                <button className="font-bold hover:underline">View Full Log Cluster</button>
+              </div>
+            </div>
+          </aside>
         </div>
-        <div className="flex flex-wrap gap-6 md:gap-8">
-          <Link href="/portfolio" className="hover:underline">
-            DOCUMENTATION
-          </Link>
-          <Link href="/admin" className="hover:underline">
-            API STATUS
-          </Link>
-          <Link href="/login" className="hover:underline">
-            SECURITY LOGS
-          </Link>
-        </div>
-      </footer>
+
+        <section className="grid grid-cols-1 gap-6 md:grid-cols-4">
+          <div className="border-4 border-black bg-white p-6 hover:bg-slate-50 transition-colors">
+            <h4 className="mb-2 text-lg font-black uppercase">Active Users</h4>
+            <p className="text-3xl font-black">2.4k</p>
+          </div>
+          <div className="border-4 border-black bg-white p-6 hover:bg-slate-50 transition-colors">
+            <h4 className="mb-2 text-lg font-black uppercase">Open Tickets</h4>
+            <p className="text-3xl font-black">14</p>
+          </div>
+          <div className="border-4 border-black bg-white p-6 hover:bg-slate-50 transition-colors">
+            <h4 className="mb-2 text-lg font-black uppercase">Avg Response</h4>
+            <p className="text-3xl font-black">1.2s</p>
+          </div>
+          <div className="border-4 border-black bg-[#ffd600] p-6 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
+            <h4 className="mb-2 text-lg font-black uppercase">Security</h4>
+            <p className="text-3xl font-black">FIREWALL: ON</p>
+          </div>
+        </section>
+
+        <footer className="mt-8 border-t-4 border-black pt-6">
+          <div className="flex flex-col gap-3 text-xs font-black uppercase md:flex-row md:items-center md:justify-between">
+            <div>© 2026 YUNAKA TECH ARCHITECTURE</div>
+            <div className="flex flex-wrap gap-4">
+              <Link href="#" className="hover:underline">Documentation</Link>
+              <Link href="#" className="hover:underline">API Reference</Link>
+              <Link href="#" className="hover:underline">System Health</Link>
+            </div>
+          </div>
+        </footer>
+      </section>
     </AdminShell>
   )
 }
